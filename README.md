@@ -1,6 +1,6 @@
 # Digital-Tape-Measure
 
-# Description
+Description
 This project attempts to estimate real-world wall dimensions from a single photo.
 Given a raw angled wall image and its corresponding reference image with laser grid lines, the script flattens the perspective distortion, computes a pixel-to-millimeter scale, and outputs the wall dimensions.
 This assignment corresponds to Level 1, with partial attempts for Level 2 and Level 3 described below.
