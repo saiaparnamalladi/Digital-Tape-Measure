@@ -1,0 +1,21 @@
+{
+  "raw_image": ".\\Raw Images\\IMG_7285.jpg",
+  "reference_image": ".\\Input\\IMG_7286.jpg",
+  "warped_reference": ".\\Output\\warped_reference.png",
+  "warped_raw": ".\\Output\\warped_raw.png",
+  "pixel_dims": {
+    "width_px": 2000,
+    "height_px": 1600
+  },
+  "mm_per_px": 1.5,
+  "estimated_mm": {
+    "width_mm": 3000.0,
+    "height_mm": 2400.0
+  },
+  "scale_info": {
+    "width_px": 2000,
+    "height_px": 1600,
+    "mm_per_px_x": 1.5,
+    "mm_per_px_y": 1.5
+  }
+}

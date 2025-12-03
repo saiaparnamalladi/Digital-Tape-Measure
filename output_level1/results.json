@@ -1,0 +1,38 @@
+{
+  "IMG_7285": {
+    "wall_height_mm": 2710,
+    "wall_width_mm": 3443.5,
+    "height_pixels": 1367,
+    "width_pixels": 1737
+  },
+  "IMG_7287": {
+    "wall_height_mm": 2710,
+    "wall_width_mm": 632.39,
+    "height_pixels": 1577,
+    "width_pixels": 368
+  },
+  "IMG_7289": {
+    "wall_height_mm": 2710,
+    "wall_width_mm": 3056.45,
+    "height_pixels": 1275,
+    "width_pixels": 1438
+  },
+  "IMG_7291": {
+    "wall_height_mm": 2710,
+    "wall_width_mm": 1208.73,
+    "height_pixels": 1195,
+    "width_pixels": 533
+  },
+  "IMG_7293": {
+    "wall_height_mm": 2710,
+    "wall_width_mm": 2333.99,
+    "height_pixels": 1182,
+    "width_pixels": 1018
+  },
+  "IMG_7295": {
+    "wall_height_mm": 2710,
+    "wall_width_mm": 4157.71,
+    "height_pixels": 380,
+    "width_pixels": 583
+  }
+}
