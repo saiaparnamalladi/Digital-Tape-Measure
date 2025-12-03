@@ -1,89 +1,121 @@
-# Digital-Tape-Measure
+# Digital Tape Measure - Wall Measurement System
 
-Description
-This project attempts to estimate real-world wall dimensions from a single photo.
-Given a raw angled wall image and its corresponding reference image with laser grid lines, the script flattens the perspective distortion, computes a pixel-to-millimeter scale, and outputs the wall dimensions.
-This assignment corresponds to Level 1, with partial attempts for Level 2 and Level 3 described below.
+This project extracts real-world dimensions from perspective-distorted photos of walls using computer vision techniques.
 
-Folder Structure
-folder1_raw/ Contains the raw wall photos taken at an angle
-folder2_input/ Contains the reference photos with red laser lines
-folder3_output/ Contains the ground truth manual measurements
-output/ Contains my generated flattened images and results.json
-src/ Python source code
+Project Structure
 
-How to Run
+```
+.
+├── Raw Images/          # Original JPG photos
+├── Input/              # Reference images with laser grid
+├── Output/             # Ground truth measurements
+├── level1.py           # Basic perspective correction
+├── level2.py           # With lens distortion handling
+├── requirements.txt    # Python dependencies
+└── README.md          # This file
+```
 
-1. Install dependencies: pip install -r requirements.txt
-2. Run the script: python main.py
+Installation
 
-Outputs
-1. A flattened version of the wall image saved in output/flattended/
-2. A results.json file containing wall width, height, and any detected measurements
+Install dependencies:
 
-My Approach
-Level 1
+```bash
+pip install -r requirements.txt
+```
 
-1. Corner Detection:
-   I detect the red laser line intersections in the reference image using color thresholding in HSV color space.
-   The detected grid points are then used to find the four outermost corners of the wall.
+Requires Python 3.7 or higher.
 
-2. Perspective Transform:
-   Using OpenCV’s getPerspectiveTransform and warpPerspective functions, the raw angled wall is warped into a flat rectangular wall.
+## Usage
 
-3. Pixel-to-MM Scale:
-   From the “target” image in folder3_output, I extract the known ground truth measurement (e.g., horizontal laser line distance).
-   Using that, I compute:
-   scale = real_world_mm / pixel_distance
-   Then multiply all pixel distances to convert them to mm.
+### Level 1 - Basic Wall Flattening
 
-Output
-The script prints and saves a JSON containing:
-wall_width_mm
-wall_height_mm
+Handles simple perspective transformation with clean laser detection.
 
-Level 2 (Lens Distortion – Attempt)
+```bash
+python level1.py
+```
 
-Some images show barrel distortion because they are captured with a wide-angle lens.
-To partially address this, I researched and implemented the following:
+Output saved to `output_level1/` folder.
 
-1. Used OpenCV’s undistort function.
-2. Implemented a simple camera calibration step using cv2.findChessboardCorners (only works when a calibration pattern is available).
-3. For this assignment, exact calibration parameters weren’t provided, so I used OpenCV’s built-in radial distortion model to straighten the curved laser lines.
+### Level 2 - Distortion Correction
 
-Limitations: Without actual camera matrix and distortion coefficients, corrections are approximate.
+Adds lens distortion correction before perspective transform for better accuracy.
 
-Level 3 (Uneven Surface – Research Summary)
-Older walls sometimes bow or curve, meaning a simple 4-point perspective transform stretches textures incorrectly.
-I explored two methods:
+```bash
+python level2.py
+```
 
-Piecewise Affine Transformation
-Split the image into a triangular mesh based on laser intersections and warp each triangle independently.
+Output saved to `output_level2/` folder.
 
-Thin Plate Spline
-A smooth non-rigid warping technique based on control points (laser grid).
-These methods can flatten curved surfaces but require dense, accurate grid detection.
-Due to time constraints, I was not able to integrate this fully, but this is the correct approach for future improvements.
+## How It Works
 
-Assumptions:
+### Level 1 Approach
 
-1. Laser lines are always straight in the reference image.
-2. The red grid covers enough of the wall to detect all corners.
-3. Camera is not rotated extremely; wall occupies most of the frame.
-4. Raw image and reference image represent the same wall region.
+1. Load input image with red laser cross
+2. Convert to HSV color space for red detection
+3. Create binary mask for red pixels (handles wraparound at 0/180)
+4. Clean mask with morphological operations
+5. Detect lines using Canny + Hough transform
+6. Separate into horizontal and vertical lines based on angle
+7. Find bounding box from line extents
+8. Apply perspective transform to raw image using detected corners
+9. Calculate pixel-to-mm scale using known wall height
+10. Compute wall width from flattened image dimensions
+
+Level 2 Additions
+
+1. Undistort both raw and input images using camera calibration parameters
+2. More robust line detection with better parameter tuning
+3. Line merging algorithm to handle multiple detected segments
+4. Fallback to original image if undistortion causes detection failure
+5. Improved scale calculation with higher precision
+
+Assumptions
+
+- Laser lines form a clear cross pattern visible in input images
+- Wall height measurements are provided (2710mm for all test images)
+- Red laser wavelength is consistent across images
+- Wall is approximately planar (small deviations acceptable)
+- Camera distortion follows standard radial model
+- Lighting conditions allow red color detection in HSV space
+
+Results Format
+
+The `results.json` file contains:
+
+```json
+{
+  "IMG_7282": {
+    "wall_height_mm": 2710.0,
+    "wall_width_mm": 3842.15,
+    "height_pixels": 1523,
+    "width_pixels": 2160,
+    "scale_px_per_mm": 0.5621
+  }
+}
+```
+
+Level 3 Approach (Not Implemented)
+
+For handling non-planar walls with surface irregularities:
+
+1. Detect full laser grid instead of just cross endpoints
+2. Create dense correspondence between grid points
+3. Apply piecewise affine or thin plate spline transformation
+4. Use local warping based on grid deformation
+5. Requires more sophisticated grid detection (possibly template matching)
+6. Would need to segment wall into local regions for independent warping
+
+Could use scikit-image PiecewiseAffineTransform or implement TPS warping with scipy.
 
 Known Limitations
 
-1. Calibration accuracy depends heavily on laser-line detection quality.
-2. Without camera matrix, barrel distortion correction is approximate.
-3. Uneven wall correction requires dense grid detection, which is partially implemented.
+- Red detection may fail in poor lighting
+- Assumes relatively clean wall backgrounds
+- Camera calibration uses estimated parameters (not measured)
+- No automatic measurement extraction from output images
+- Doesn't handle cases where laser is partially occluded
 
-results.json Format
-{
-"wall_width_mm": <value>,
-"wall_height_mm": <value>,
-"confidence": <0-1>
-}
+## Notes
 
-Contact
-For any clarifications, feel free to reach out.
+Wall height measurements were manually extracted from output images. For production use, implement OCR or provide measurements separately.
